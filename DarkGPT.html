@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DarkGPT avec Screamer</title>
+    <style>
+        body {
+            background-color: black; /* Fond noir */
+            color: red; /* Texte en rouge */
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            padding-top: 50px;
+            overflow: hidden; /* Empeche le defilement */
+        }
+        #screamer {
+            display: none;
+            position: absolute; /* Positionnement absolu pour le mouvement */
+            width: 400px;
+            height: auto;
+            transition: transform 0.2s; /* Transition pour l'agrandissement */
+        }
+        #cuteImage {
+            display: none; /* Cachee au depart */
+            width: 200px; /* Ajuste selon ton image mignonne */
+            margin-top: 20px;
+            transition: transform 2s; /* Transition pour l'agrandissement */
+            position: absolute; /* Positionnement pour le centrage */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1); /* Centrer initialement */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bienvenue dans le monde de DarkGPT</h1>
+    <div id="chatBox">
+        <p><strong>DarkGPT:</strong> Bienvenue... dans l'obscurite. Es-tu pret a affronter tes peurs ? Reponds seulement par "oui" ou "non".</p>
+    </div>
+
+    <div id="userInput">
+        <input type="text" id="userResponse" placeholder="Ta reponse...">
+        <input type="button" value="Envoyer" onclick="processResponse()">
+    </div>
+
+    <!-- Image du screamer, cachee au depart -->
+    <img id="screamer" src="https://i.ytimg.com/vi/7rZQub9RnVA/maxresdefault.jpg" alt="Screamer"> <!-- Remplace par ton image -->
+   
+    <!-- Image mignonne, cachee au depart -->
+    <img id="cuteImage" src="https://www.einpresswire.com/image/large/723114/hacker-sitting-at-a-laptop.jpeg" alt="Cute Image"> <!-- Remplace par ton image mignonne -->
+
+    <script>
+        let currentQuestion = 0;
+        const questions = [
+            "As-tu deja senti une presence derriere toi, meme lorsque tu es seul ?",
+            "Lorsque tu fermes les yeux, entends-tu parfois des murmures que tu n’arrives pas a comprendre, mais qui semblent te parler directement ?",
+            "Te souviens-tu d'un moment ou tu as entendu ton nom etre appele alors que personne ne se trouvait avec toi ?",
+            "As-tu deja entendu des voix lorsque personne n'etait la ?",
+            "As-tu deja eu l'impression que ton reflet dans le miroir ne te suivait pas immediatement, comme s'il agissait de sa propre volonte ?",
+            "Sais-tu que tu n'es pas seul, meme maintenant ?"
+        ];
+
+        function addMessage(sender, message) {
+            const chatBox = document.getElementById("chatBox");
+            const newMessage = document.createElement("p");
+            newMessage.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatBox.appendChild(newMessage);
+            chatBox.scrollTop = chatBox.scrollHeight; // Pour faire defiler automatiquement vers le bas
+        }
+
+        function processResponse() {
+            const userResponse = document.getElementById("userResponse").value.toLowerCase();
+            if (userResponse === "oui" || userResponse === "non") {
+                addMessage("Toi", userResponse);
+                setTimeout(() => {
+                    if (currentQuestion < questions.length - 1) {
+                        currentQuestion++;
+                        addMessage("DarkGPT", questions[currentQuestion]);
+                    } else {
+                        addMessage("DarkGPT", "Merci d'avoir joue avec moi... On se reverra bientot, dans tes cauchemars.");
+                        triggerScreamer(); // Lancer le screamer immediatement
+                    }
+                }, 1000);
+            } else {
+                addMessage("DarkGPT", "Je n'ai besoin que de 'oui' ou 'non'. Reessaye.");
+            }
+            document.getElementById("userResponse").value = ""; // Vider le champ de texte
+        }
+
+        // Fonction pour declencher le screamer
+        function triggerScreamer() {
+            const img = document.getElementById('screamer');
+            img.style.display = 'block'; // Affiche l'image du screamer
+           
+            let startTime = Date.now();
+            const screamDuration = 10000; // 10 secondes
+            const hideScreamerDelay = 2000; // 2 secondes avant de cacher les screamers
+            let duplications = 0;
+
+            const screamInterval = setInterval(() => {
+                if (Date.now() - startTime < screamDuration) { // 10 secondes
+                    const duplicateImg = img.cloneNode(true);
+                    document.body.appendChild(duplicateImg);
+                    duplications++;
+
+                    // Effet de mouvement et d'agrandissement
+                    const randomX = Math.random() * window.innerWidth;
+                    const randomY = Math.random() * window.innerHeight;
+                    const scale = 0.5 + Math.random(); // Scale entre 0.5 et 1.5
+                    duplicateImg.style.transform = `translate(${randomX}px, ${randomY}px) scale(${scale})`;
+                } else {
+                    clearInterval(screamInterval);
+                    setTimeout(() => {
+                        img.style.display = 'none'; // Cache les screamers
+                        displayCuteImage(); // Affiche l'image mignonne apres la disparition des screamers
+                    }, hideScreamerDelay); // Delai de 2 secondes avant d'afficher l'image mignonne
+                }
+            }, 200); // Se repete toutes les 200ms
+        }
+
+        // Fonction pour afficher l'image mignonne
+        function displayCuteImage() {
+            const cuteImg = document.getElementById('cuteImage');
+            cuteImg.style.display = 'block'; // Affiche l'image mignonne
+            setTimeout(() => {
+                cuteImg.style.transform = 'translate(-50%, -50%) scale(10)'; // Agrandit l'image pour remplir l'ecran
+            }, 100); // Legere attente avant de commencer l'animation
+            setTimeout(() => {
+                cuteImg.style.display = 'none'; // Cache apres 30 secondes
+            }, 30000); // 30 secondes
+        }
+
+        // Commence avec la premiere question apres un delai
+        setTimeout(() => {
+            addMessage("DarkGPT", questions[currentQuestion]);
+        }, 2000);
+    </script>
+
+</body>
+</html>
